@@ -1,5 +1,4 @@
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 class Bogie {
@@ -13,40 +12,37 @@ class Bogie {
         this.capacity = capacity;
     }
 
+    public String getType() {
+        return type;
+    }
+
     @Override
     public String toString() {
-        return String.format("Bogie{ID='%s', Type='%s', Capacity=%d}", id, type, capacity);
+        return String.format("[%s: Cap %d]", id, capacity);
     }
 }
 
 public class UseCase {
     public static void main(String[] args) {
-        // 1. Create a list of bogies (Reuse from UC7 logic)
-        List<Bogie> consist = new ArrayList<>();
-        consist.add(new Bogie("B1", "Sleeper", 72));
-        consist.add(new Bogie("B2", "AC Chair", 56));
-        consist.add(new Bogie("B3", "First Class", 24));
-        consist.add(new Bogie("B4", "Sleeper", 80));
-        consist.add(new Bogie("B5", "AC Chair", 65));
+        // 1. Create a list of bogies
+        List<Bogie> consist = Arrays.asList(
+                new Bogie("B1", "Sleeper", 72),
+                new Bogie("B2", "AC Chair", 56),
+                new Bogie("B3", "Sleeper", 72),
+                new Bogie("B4", "First Class", 24),
+                new Bogie("B5", "AC Chair", 65),
+                new Bogie("B6", "Goods-Rectangular", 0)
+        );
 
-        System.out.println("--- Original Consist ---");
-        consist.forEach(System.out::println);
+        // 2. Convert list to stream, 3. Apply groupingBy(), 4. Store in Map
+        Map<String, List<Bogie>> groupedBogies = consist.stream()
+                .collect(Collectors.groupingBy(Bogie::getType));
 
-        // 2. Convert list to stream, 3. Apply filter, 4. Collect to new list
-        int capacityThreshold = 60;
-        List<Bogie> highCapacityBogies = consist.stream()
-                .filter(b -> b.capacity > capacityThreshold)
-                .collect(Collectors.toList());
-
-        // 5. Display filtered bogies
-        System.out.println("\n--- High-Capacity Bogies (Capacity > " + capacityThreshold + ") ---");
-        if (highCapacityBogies.isEmpty()) {
-            System.out.println("No bogies match the criteria.");
-        } else {
-            highCapacityBogies.forEach(System.out::println);
-        }
-
-        // Verify original integrity
-        System.out.println("\nOriginal list size remains: " + consist.size());
+        // 5. Display the grouped result
+        System.out.println("--- Grouped Train Consist Report ---");
+        groupedBogies.forEach((type, list) -> {
+            System.out.println("Type: " + type + " | Count: " + list.size());
+            System.out.println("  Bogies: " + list);
+        });
     }
 }
