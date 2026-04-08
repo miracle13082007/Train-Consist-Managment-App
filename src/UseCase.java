@@ -1,57 +1,52 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
-// Bogie class
 class Bogie {
-    private String name;
-    private int capacity;
+    String id;
+    String type;
+    int capacity;
 
-    // Constructor
-    public Bogie(String name, int capacity) {
-        this.name = name;
+    public Bogie(String id, String type, int capacity) {
+        this.id = id;
+        this.type = type;
         this.capacity = capacity;
     }
 
-    // Getters
-    public String getName() {
-        return name;
-    }
-
-    public int getCapacity() {
-        return capacity;
-    }
-
-    // Display method
-    public void display() {
-        System.out.println("Bogie: " + name + " | Capacity: " + capacity);
+    @Override
+    public String toString() {
+        return String.format("Bogie{ID='%s', Type='%s', Capacity=%d}", id, type, capacity);
     }
 }
 
-// Main class
 public class UseCase {
     public static void main(String[] args) {
+        // 1. Create a list of bogies (Reuse from UC7 logic)
+        List<Bogie> consist = new ArrayList<>();
+        consist.add(new Bogie("B1", "Sleeper", 72));
+        consist.add(new Bogie("B2", "AC Chair", 56));
+        consist.add(new Bogie("B3", "First Class", 24));
+        consist.add(new Bogie("B4", "Sleeper", 80));
+        consist.add(new Bogie("B5", "AC Chair", 65));
 
-        // Create list of bogies
-        List<Bogie> bogieList = new ArrayList<>();
+        System.out.println("--- Original Consist ---");
+        consist.forEach(System.out::println);
 
-        // Add passenger bogies
-        bogieList.add(new Bogie("Sleeper", 72));
-        bogieList.add(new Bogie("AC Chair", 56));
-        bogieList.add(new Bogie("First Class", 24));
+        // 2. Convert list to stream, 3. Apply filter, 4. Collect to new list
+        int capacityThreshold = 60;
+        List<Bogie> highCapacityBogies = consist.stream()
+                .filter(b -> b.capacity > capacityThreshold)
+                .collect(Collectors.toList());
 
-        // Sort bogies by capacity (ascending)
-        bogieList.sort(Comparator.comparingInt(Bogie::getCapacity));
-
-        System.out.println("Bogies sorted by capacity (Ascending):");
-        for (Bogie b : bogieList) {
-            b.display();
+        // 5. Display filtered bogies
+        System.out.println("\n--- High-Capacity Bogies (Capacity > " + capacityThreshold + ") ---");
+        if (highCapacityBogies.isEmpty()) {
+            System.out.println("No bogies match the criteria.");
+        } else {
+            highCapacityBogies.forEach(System.out::println);
         }
 
-        // Optional: Sort in descending order
-        bogieList.sort(Comparator.comparingInt(Bogie::getCapacity).reversed());
-
-        System.out.println("\nBogies sorted by capacity (Descending):");
-        for (Bogie b : bogieList) {
-            b.display();
-        }
+        // Verify original integrity
+        System.out.println("\nOriginal list size remains: " + consist.size());
     }
 }
