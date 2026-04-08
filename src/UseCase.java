@@ -1,52 +1,55 @@
 import java.util.*;
+import java.util.stream.Collectors;
 
-class GoodsBogie {
+class Bogie {
     String id;
-    String shape; // Cylindrical, Rectangular, etc.
-    String cargo;
+    int capacity;
 
-    public GoodsBogie(String id, String shape, String cargo) {
+    public Bogie(String id, int capacity) {
         this.id = id;
-        this.shape = shape;
-        this.cargo = cargo;
-    }
-
-    public String getShape() { return shape; }
-    public String getCargo() { return cargo; }
-
-    @Override
-    public String toString() {
-        return String.format("[%s | Shape: %s | Cargo: %s]", id, shape, cargo);
+        this.capacity = capacity;
     }
 }
 
 public class UseCase {
     public static void main(String[] args) {
-        // 1. Prepare a list of goods bogies
-        List<GoodsBogie> goodsConsist = Arrays.asList(
-                new GoodsBogie("G1", "Rectangular", "Coal"),
-                new GoodsBogie("G2", "Cylindrical", "Petroleum"),
-                new GoodsBogie("G3", "Rectangular", "Grain"),
-                new GoodsBogie("G4", "Cylindrical", "Petroleum")
-        );
+        // 1. Prepare a large dataset for meaningful benchmarking
+        List<Bogie> consist = new ArrayList<>();
+        for (int i = 0; i < 10000; i++) {
+            consist.add(new Bogie("B" + i, (int) (Math.random() * 100)));
+        }
 
-        System.out.println("Checking Safety Compliance for Consist:");
-        goodsConsist.forEach(System.out::println);
+        System.out.println("Benchmarking filtering of " + consist.size() + " bogies...");
 
-        // 2. Convert to stream | 3. allMatch() with safety logic
-        boolean isSafe = goodsConsist.stream().allMatch(bogie -> {
-            if (bogie.getShape().equalsIgnoreCase("Cylindrical")) {
-                return bogie.getCargo().equalsIgnoreCase("Petroleum");
+        // --- Loop-Based Processing ---
+        long startLoop = System.nanoTime();
+        List<Bogie> loopFiltered = new ArrayList<>();
+        for (Bogie b : consist) {
+            if (b.capacity > 60) {
+                loopFiltered.add(b);
             }
-            return true; // Non-cylindrical bogies pass this specific rule
-        });
+        }
+        long endLoop = System.nanoTime();
+        long loopDuration = endLoop - startLoop;
 
-        // 5. Display Result
+        // --- Stream-Based Processing ---
+        long startStream = System.nanoTime();
+        List<Bogie> streamFiltered = consist.stream()
+                .filter(b -> b.capacity > 60)
+                .collect(Collectors.toList());
+        long endStream = System.nanoTime();
+        long streamDuration = endStream - startStream;
+
+        // --- Results ---
         System.out.println("-------------------------------------------");
-        if (isSafe) {
-            System.out.println("STATUS: SAFE - All safety rules satisfied.");
+        System.out.println("Loop Duration   : " + loopDuration + " ns");
+        System.out.println("Stream Duration : " + streamDuration + " ns");
+        System.out.println("Results Match   : " + (loopFiltered.size() == streamFiltered.size()));
+
+        if (loopDuration < streamDuration) {
+            System.out.println("Winner: Traditional Loop (Lower overhead)");
         } else {
-            System.out.println("STATUS: UNSAFE - Violation detected in cargo assignment!");
+            System.out.println("Winner: Java Stream (Optimization/JIT potential)");
         }
     }
 }
