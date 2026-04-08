@@ -1,5 +1,4 @@
 import java.util.*;
-import java.util.stream.Collectors;
 
 class Bogie {
     String id;
@@ -12,13 +11,9 @@ class Bogie {
         this.capacity = capacity;
     }
 
-    public String getType() {
-        return type;
-    }
-
     @Override
     public String toString() {
-        return String.format("[%s: Cap %d]", id, capacity);
+        return String.format("%s (%s: %d)", id, type, capacity);
     }
 }
 
@@ -26,23 +21,22 @@ public class UseCase {
     public static void main(String[] args) {
         // 1. Create a list of bogies
         List<Bogie> consist = Arrays.asList(
-                new Bogie("B1", "Sleeper", 72),
-                new Bogie("B2", "AC Chair", 56),
-                new Bogie("B3", "Sleeper", 72),
-                new Bogie("B4", "First Class", 24),
-                new Bogie("B5", "AC Chair", 65),
-                new Bogie("B6", "Goods-Rectangular", 0)
+                new Bogie("S1", "Sleeper", 72),
+                new Bogie("S2", "Sleeper", 72),
+                new Bogie("A1", "AC Chair", 56),
+                new Bogie("F1", "First Class", 24)
         );
 
-        // 2. Convert list to stream, 3. Apply groupingBy(), 4. Store in Map
-        Map<String, List<Bogie>> groupedBogies = consist.stream()
-                .collect(Collectors.groupingBy(Bogie::getType));
+        System.out.println("Train Consist attached to Engine:");
+        consist.forEach(System.out::println);
 
-        // 5. Display the grouped result
-        System.out.println("--- Grouped Train Consist Report ---");
-        groupedBogies.forEach((type, list) -> {
-            System.out.println("Type: " + type + " | Count: " + list.size());
-            System.out.println("  Bogies: " + list);
-        });
+        // 2. Convert to stream | 3. Map to capacity | 4. Reduce to sum
+        int totalSeats = consist.stream()
+                .map(b -> b.capacity)           // Extracting numeric values
+                .reduce(0, Integer::sum);       // Aggregating into a single total
+
+        // 5. Display result
+        System.out.println("------------------------------------");
+        System.out.println("Total Seating Capacity of Train: " + totalSeats);
     }
 }
