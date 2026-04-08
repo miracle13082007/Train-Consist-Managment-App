@@ -1,52 +1,55 @@
-class CargoSafetyException extends RuntimeException {
-    public CargoSafetyException(String message) {
-        super(message);
-    }
-}
+public class UseCase {
 
-class GoodsBogie {
-    private String bogieId;
-    private String shape;
-    private String assignedCargo = "Empty";
+    public static void sortBogieCapacities(int[] capacities) {
+        int n = capacities.length;
+        boolean swapped;
 
-    public GoodsBogie(String bogieId, String shape) {
-        this.bogieId = bogieId;
-        this.shape = shape;
-    }
+        System.out.println("Starting Bubble Sort on capacities...");
 
-    public void assignCargo(String cargoType) {
-        System.out.println("\nAttempting: " + cargoType + " -> " + bogieId + " (" + shape + ")");
+        // Outer loop for each pass
+        for (int i = 0; i < n - 1; i++) {
+            swapped = false;
 
-        try {
-            if (cargoType.equalsIgnoreCase("Petroleum") && shape.equalsIgnoreCase("Rectangular")) {
-                throw new CargoSafetyException("CRITICAL SAFETY ERROR: Petroleum requires Cylindrical storage!");
+            // Inner loop for adjacent comparison
+            // n-1-i because the last i elements are already sorted
+            for (int j = 0; j < n - 1 - i; j++) {
+                if (capacities[j] > capacities[j + 1]) {
+                    // Swapping Logic
+                    int temp = capacities[j];
+                    capacities[j] = capacities[j + 1];
+                    capacities[j + 1] = temp;
+                    swapped = true;
+                }
             }
-            this.assignedCargo = cargoType;
-            System.out.println("SUCCESS: Cargo assigned.");
-        } catch (CargoSafetyException e) {
-            System.err.println("CAUGHT: " + e.getMessage());
-            System.out.println("STATUS: Assignment rejected for safety.");
-        } finally {
-            System.out.println("LOG: Validation process completed for " + bogieId);
+
+            // Optimization: If no two elements were swapped by inner loop, then break
+            if (!swapped) break;
         }
     }
 
-    public String getAssignedCargo() {
-        return assignedCargo;
+    public static void printArray(int[] arr) {
+        for (int value : arr) {
+            System.out.print(value + " ");
+        }
+        System.out.println();
     }
-}
 
-public class UseCase {
     public static void main(String[] args) {
-        GoodsBogie b1 = new GoodsBogie("GB-101", "Cylindrical");
-        GoodsBogie b2 = new GoodsBogie("GB-102", "Rectangular");
+        // Sample dataset of bogie capacities
+        int[] capacities = {72, 56, 24, 70, 60};
 
-        b1.assignCargo("Petroleum");
-        b2.assignCargo("Petroleum");
-        b2.assignCargo("Coal");
+        System.out.print("Original Capacities: ");
+        printArray(capacities);
 
-        System.out.println("\nFinal Consist Summary:");
-        System.out.println("Bogie 101: " + b1.getAssignedCargo());
-        System.out.println("Bogie 102: " + b2.getAssignedCargo());
+        sortBogieCapacities(capacities);
+
+        System.out.print("Sorted Capacities (Ascending): ");
+        printArray(capacities);
+
+        // Demonstration of stability with duplicate values
+        int[] duplicates = {72, 56, 56, 24};
+        System.out.print("\nSorting with Duplicates: ");
+        sortBogieCapacities(duplicates);
+        printArray(duplicates);
     }
 }
