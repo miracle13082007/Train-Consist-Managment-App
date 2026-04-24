@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class UseCase {
@@ -13,14 +14,25 @@ public class UseCase {
             bogieIds[i] = scanner.nextLine();
         }
 
-        String searchKey = scanner.nextLine();
+        String key = scanner.nextLine();
+
+        Arrays.sort(bogieIds);
 
         boolean found = false;
+        int low = 0;
+        int high = bogieIds.length - 1;
 
-        for (int i = 0; i < n; i++) {
-            if (bogieIds[i].equals(searchKey)) {
+        while (low <= high) {
+            int mid = (low + high) / 2;
+            int cmp = bogieIds[mid].compareTo(key);
+
+            if (cmp == 0) {
                 found = true;
                 break;
+            } else if (cmp < 0) {
+                low = mid + 1;
+            } else {
+                high = mid - 1;
             }
         }
 
