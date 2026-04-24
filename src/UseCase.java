@@ -1,25 +1,30 @@
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class UseCase {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Enter number of bogie types:");
         int n = scanner.nextInt();
         scanner.nextLine();
 
-        String[] bogies = new String[n];
+        String[] bogieIds = new String[n];
 
-        System.out.println("Enter bogie names:");
         for (int i = 0; i < n; i++) {
-            bogies[i] = scanner.nextLine();
+            bogieIds[i] = scanner.nextLine();
         }
 
-        Arrays.sort(bogies);
+        String searchKey = scanner.nextLine();
 
-        System.out.println("Sorted bogie names:");
-        System.out.println(Arrays.toString(bogies));
+        boolean found = false;
+
+        for (int i = 0; i < n; i++) {
+            if (bogieIds[i].equals(searchKey)) {
+                found = true;
+                break;
+            }
+        }
+
+        System.out.println(found);
 
         scanner.close();
     }
