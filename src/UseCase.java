@@ -1,4 +1,3 @@
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class UseCase {
@@ -16,23 +15,16 @@ public class UseCase {
 
         String key = scanner.nextLine();
 
-        Arrays.sort(bogieIds);
+        if (bogieIds.length == 0) {
+            throw new IllegalStateException("No bogies available for search");
+        }
 
         boolean found = false;
-        int low = 0;
-        int high = bogieIds.length - 1;
 
-        while (low <= high) {
-            int mid = (low + high) / 2;
-            int cmp = bogieIds[mid].compareTo(key);
-
-            if (cmp == 0) {
+        for (int i = 0; i < bogieIds.length; i++) {
+            if (bogieIds[i].equals(key)) {
                 found = true;
                 break;
-            } else if (cmp < 0) {
-                low = mid + 1;
-            } else {
-                high = mid - 1;
             }
         }
 
